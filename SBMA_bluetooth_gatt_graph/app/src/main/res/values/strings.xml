@@ -1,0 +1,11 @@
+<resources>
+    <string name="app_name">SBMA_jarkko_lab_6</string>
+    <string name="devise_address_title">Address:</string>
+    <string name="devise_power_title">Signal strength:</string>
+    <string name="devise_name_title">Name:</string>
+    <string name="devise_address">wer-werwer-wer-wer</string>
+    <string name="devise_power">32464</string>
+    <string name="devise_name">blabla</string>
+    <string name="str_scanning">Scanning...</string>
+    <string name="str_startScan">Start scan</string>
+</resources>

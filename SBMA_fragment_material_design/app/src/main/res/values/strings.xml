@@ -1,0 +1,9 @@
+<resources>
+    <string name="app_name">Mood app</string>
+    <string name="str_btnHappy">I AM HAPPY</string>
+    <string name="str_btnHappy1">I am happy</string>
+    <string name="str_tvDesc">Tell us how do you feel by pressing one of the buttons below</string>
+    <string name="str_btnSad">I AM SAD</string>
+    <string name="str_btnSad1">I am sad</string>
+    <string name="str_fabDontTouchDesc">Please do not touch this</string>
+</resources>

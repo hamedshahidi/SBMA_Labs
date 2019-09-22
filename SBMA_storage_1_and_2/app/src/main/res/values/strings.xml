@@ -1,0 +1,11 @@
+<resources>
+    <string name="app_name">SBMA_patrik_storage_2</string>
+
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="tv_f1_title_01" >Write something here to save it to a file:</string>
+    <string name="str_btnSaveFile">Save to file</string>
+    <string name="str_f2_title">File content:</string>
+    <string name="str_btnReadFile">Read from file</string>
+    <string name="str_saveStatus">Your text is saved to the file :)</string>
+    <string name="str_btnClearFile">Clear file</string>
+</resources>

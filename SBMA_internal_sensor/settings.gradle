@@ -1,0 +1,2 @@
+include ':app'
+rootProject.name='SBMA_patrik_sensor_1'

@@ -1,0 +1,10 @@
+<resources>
+    <string name="app_name">AR.chitecture</string>
+
+    <string name="title_activity_splashscreen">Splashscreen</string>
+    <string name="dummy_button">Dummy Button</string>
+    <string name="dummy_content">DUMMY\nCONTENT</string>
+    <string name="splash_title">AR.chitector</string>
+    <string name="btn_artist">I am an artist</string>
+    <string name="btn_voter">I am a voter</string>
+</resources>
