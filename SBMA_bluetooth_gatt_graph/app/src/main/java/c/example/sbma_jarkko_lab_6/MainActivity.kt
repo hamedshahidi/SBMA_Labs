@@ -5,12 +5,14 @@ import android.bluetooth.BluetoothAdapter
 import android.bluetooth.BluetoothManager
 import android.bluetooth.le.*
 import android.content.Context
+import android.content.Intent
 import android.content.pm.PackageManager
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.os.Handler
 import android.util.Log
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlin.collections.LinkedHashMap
 
@@ -21,18 +23,14 @@ class MainActivity : AppCompatActivity() {
 
 
     private lateinit var linearLayoutManager: LinearLayoutManager
-    //private lateinit var adapter: RecyclerAdapter
 
-    private lateinit var scanResList: kotlin.collections.MutableSet<ScanResult>
-    private lateinit var devices: kotlin.collections.MutableSet<Device>
-
-    private lateinit var mBluetoothAdapter: BluetoothAdapter
+    private var mBluetoothAdapter: BluetoothAdapter? = null
 
 
     private  var mScanResults: LinkedHashMap<String, ScanResult>? = null
 
 
-    private lateinit var mScanCallback: ScanCallback
+    private var mScanCallback: ScanCallback? = null
     private lateinit var mBluetoothLeScanner: BluetoothLeScanner
     private lateinit var mHandler: Handler
     private var mScanning: Boolean = false
@@ -46,11 +44,11 @@ class MainActivity : AppCompatActivity() {
             addScanResult(result)
         }
 
-        override fun onBatchScanResults(results: List<ScanResult>) {
+/*        override fun onBatchScanResults(results: List<ScanResult>) {
             for (result in results) {
                 addScanResult(result)
             }
-        }
+        }*/
 
         override fun onScanFailed(errorCode: Int) {
             Log.d(TAG, "BLE Scan Failed with code $errorCode")
@@ -59,11 +57,13 @@ class MainActivity : AppCompatActivity() {
         private fun addScanResult(result: ScanResult) {
             val device = result.device
             val deviceAddress = device.address
-            val uuid = device.uuids
-            val deviceName = device.name
+            //val uuid = device.uuids
+            //val deviceName = device.name
 
-            mScanResults?.set(deviceAddress, result)
-            Log.d(TAG, "Device address: $deviceAddress (${result.isConnectable})")
+            mScanResults!![deviceAddress] = result
+
+            //mScanResults?.set(deviceAddress, result)
+            //Log.d(TAG, "Device address: $deviceAddress (${result.isConnectable})")
 
             /*// check if list already contains the device
             if (!scanResList.map { it.device.address }.contains(result.device.address)){
@@ -73,7 +73,7 @@ class MainActivity : AppCompatActivity() {
                 //adapter.notifyDataSetChanged()
             }
 */
-            Log.d(TAG, scanResList.count().toString())
+            //Log.d(TAG, scanResList.count().toString())
         }
     }
 
@@ -89,8 +89,8 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        val bluetoothManager = getSystemService(Context.BLUETOOTH_SERVICE)
-                as BluetoothManager
+        val bluetoothManager =
+            getSystemService(Context.BLUETOOTH_SERVICE) as BluetoothManager
         mBluetoothAdapter = bluetoothManager.adapter
 
         btnScan.setOnClickListener {
@@ -102,28 +102,26 @@ class MainActivity : AppCompatActivity() {
             }
         }
 
-        scanResList = mutableSetOf()
-        devices = mutableSetOf()
+        tv_result.setOnClickListener{
+            intent = Intent(this,GraphActivity::class.java)
+            startActivity(intent)
+        }
 
         linearLayoutManager = LinearLayoutManager(this)
         rvBtDevices.layoutManager = linearLayoutManager
-
-        //rvBtDevices.adapter = RecyclerAdapter(this)
-
-        /*adapter = RecyclerAdapter(devices)
-        rvBtDevices.adapter = adapter
-        rvBtDevices.addItemDecoration(
-            RecyclerAdapter.MarginItemDecoration(
-                10
-            )
-        )*/
     }
 
     private fun startScan() {
+        if(!hasPermissions() || mScanning) return
         Log.d("scan", "Scan started...")
+        BluetoothDataManager.mScanResult?.clear()
+        if(rvBtDevices.adapter != null){
+            (rvBtDevices.adapter as RecyclerView.Adapter).notifyDataSetChanged()
+        }
+
         mScanResults = LinkedHashMap()
         mScanCallback = BtleScanCallback()
-        mBluetoothLeScanner = mBluetoothAdapter.bluetoothLeScanner
+        mBluetoothLeScanner = mBluetoothAdapter!!.bluetoothLeScanner
 
         val settings = ScanSettings.Builder()
             .setScanMode(ScanSettings.SCAN_MODE_LOW_POWER)
@@ -141,11 +139,15 @@ class MainActivity : AppCompatActivity() {
 
     private fun stopScan() {
         mBluetoothLeScanner.stopScan(mScanCallback)
-        //mScanCallback = null
-        //mScanning = null
+        mScanCallback = null
+        mScanning = false
         btnScan.text = getString(R.string.str_startScan)
         btnScan.background = getDrawable(R.drawable.btn_scan_bg)
         btnScan.isClickable = true
+        handleScanCompletion()
+    }
+
+    private fun handleScanCompletion(){
         if (mScanResults!!.count() > 0) {
             BluetoothDataManager.setScanResult(mScanResults)
             rvBtDevices.adapter = RecyclerAdapter(this)
@@ -153,7 +155,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun hasPermissions(): Boolean {
-        if (mBluetoothAdapter == null || !mBluetoothAdapter.isEnabled) {
+        if (mBluetoothAdapter == null || !mBluetoothAdapter!!.isEnabled) {
             Log.d("DBG", "No Bluetooth LE capability")
             return false
         } else if (checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION) !=

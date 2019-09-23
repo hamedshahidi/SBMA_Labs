@@ -1,3 +1,5 @@
+
+
 package c.example.sbma_jarkko_lab_6
 
 import android.bluetooth.BluetoothGatt

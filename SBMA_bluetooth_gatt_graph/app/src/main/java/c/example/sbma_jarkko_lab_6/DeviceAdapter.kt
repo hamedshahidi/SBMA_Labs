@@ -1,3 +1,6 @@
+// adapter used for bluetooth lab1
+
+
 /*
 package c.example.sbma_jarkko_lab_6
 
